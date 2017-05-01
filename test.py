@@ -1,6 +1,9 @@
 
 import linkedIn
+import json
 
+login_auth = open('login_auth.json', 'r')
+login = json.load(login_auth)
 
 f = open('/Users/andreasharmuth/Google Drive/company_info_miner/last_history_links.txt')
 
@@ -9,7 +12,7 @@ href_list = [link for link in f.read().split("\n")]
 
 
 
-employment_dict = linkedIn.get_user_info_by_list(href_list,'andharmuth@gmail.com','KoL26800')
+employment_dict = linkedIn.get_user_info_by_list(href_list,login['user'],login['password'])
 
 
 
