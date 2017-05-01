@@ -104,6 +104,38 @@ def login(driver,first_url,email,password,slower = 1):
         try:
             un = driver.find_element_by_class_name('form-password')
             pw = driver.find_element_by_class_name('password_wrapper')
+            un.send_keys(email)
+            pw.click()  # As this is a password, you have to click it!
+            pw.send_keys(password)
+            time.sleep(0.5)
+            driver.find_element_by_id('btn-primary').click()
+            break
+        except:
+            pass
+    # TODO: check if logged in and then move:
+        """
+        un.send_keys(email)
+            pw.click()  # As this is a password, you have to click it!
+            pw.send_keys(password)
+            time.sleep(0.5)
+            driver.find_element_by_id('btn-primary').click()
+        """
+
+
+
+
+
+
+
+def force_login(driver,email,password):
+
+    timeout = 10
+
+    start = time.time()
+    while time.time() < start + timeout:
+        try:
+            un = driver.find_element_by_class_name('form-password')
+            pw = driver.find_element_by_class_name('password_wrapper')
             break
         except:
             pass
@@ -113,13 +145,6 @@ def login(driver,first_url,email,password,slower = 1):
     pw.send_keys(password)
     time.sleep(0.5)
     driver.find_element_by_id('btn-primary').click()
-
-
-
-
-
-
-
 
 
 
@@ -234,6 +259,7 @@ def number_of_employee_links_by_id(company_id,email,password,slower=1):
 
     # Give the first url
     login(driver, url, email, password)
+
     time.sleep(5*slower)
     start = time.time()
     while time.time()<start+timeout:
@@ -258,12 +284,14 @@ def number_of_employee_links_by_id(company_id,email,password,slower=1):
 
     for i in range(pages_list):
         driver.get(main_url + '&page='+str(i+1))
-
+        time.sleep(3 * slower)
         scroll_and_load(driver, jmp=50, slow=10)
 
         user_elements = driver.find_elements_by_class_name('search-result__image-wrapper')
         for user in user_elements:
-            if user != None:
+            if len(user.find_element_by_class_name('search-result__result-link').get_attribute('href').split('https://www.linkedin.com/search/results/people/')) > 1:
+                employee_links.append('OON') # Check if the person if out of the network
+            else:
                 # Append valid links to the list
                 employee_links.append(user.find_element_by_class_name('search-result__result-link').get_attribute('href'))
 
@@ -287,16 +315,26 @@ def number_of_employee_links_by_id(company_id,email,password,slower=1):
 
 
 def get_user_info_by_list(urls, email, password,slow=1):
+    print(urls)
+    urls = [url for url in urls if url != 'OON'] # Only get the urls that contain valid people
+    print(urls)
     timeout = 10
     driver = webdriver.Firefox()
     employee_info = {}
 
 
+
     for index,url in enumerate(urls):
         if index != 0:
             driver.get(url)
+
         else:
-            login(driver, urls[0], email, password)
+            driver.get(url)
+            driver.find_element_by_class_name('nav-signin').click()
+            force_login(driver, email, password)
+            time.sleep(3)
+            driver.get(url)
+
 
         start = time.time()
         while time.time() < start + timeout:
@@ -305,6 +343,7 @@ def get_user_info_by_list(urls, email, password,slow=1):
                 break
             except:
                 pass
+
 
 
         # Have to load the JS-generated html by scrolling

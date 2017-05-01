@@ -1,6 +1,10 @@
 
 import linkedIn
 import cvr_miner as cm
+import json
+
+login_auth = open('login_auth.json', 'r')
+login = json.load(login_auth)
 
 class Company:
 
@@ -22,6 +26,12 @@ class Company:
 
     def employee_info(self,email,password):
         href_list = linkedIn.number_of_employee_links_by_id(self.lid, email, password)
+        f = open('last_history_links.txt', 'w')
+        for link in href_list:
+            f.write(link + '\n')
+        f.close()
+
+
         return linkedIn.get_user_info_by_list(href_list, email, password)
 
 
@@ -39,24 +49,13 @@ company1 = Company(725309,32163289)
 
 
 
-print(company1.address)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-"""
 #Test
-#employment_dict = DTU.employee_info('xxxxxxx','xxxxxxx')
+employment_dict = company1.employee_info(login['user'],login['password'])
+
+
 
 
 file_log = ""
@@ -84,4 +83,3 @@ for name in employment_dict:
     file_log += "-" * 50 + '\n'+'\n'
 f.write(file_log)
 f.close()  # you can omit in most cases as the destructor will call it
-"""
