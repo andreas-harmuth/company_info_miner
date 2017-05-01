@@ -42,7 +42,7 @@ company1 = Company(725309,32163289)
 print(company1.address)
 
 
-#employment_dict = DTU.employee_info('andharmuth@gmail.com','KoL26800')
+
 
 
 
@@ -55,6 +55,10 @@ print(company1.address)
 
 
 """
+#Test
+#employment_dict = DTU.employee_info('xxxxxxx','xxxxxxx')
+
+
 file_log = ""
 f = open('last_history', 'w')
 
